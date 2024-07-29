@@ -21,4 +21,33 @@ public class UserDealer(DatabaseCredentials dbCredentials) : GenericDealer(dbCre
         }
         return user;
     }
+
+    public async Task<int[]> GetBarIds(int userId) {
+        NpgsqlDataReader reader = await RetrieveData($"SELECT bar_ids FROM users WHERE id = {userId};");
+        reader.Read();
+        int[] barIds = (int[])reader.GetValue(0);
+        if (barIds == null) {
+            throw new Exception("Response not understood.");
+        }
+        return barIds;
+    }
+
+    // public async Task<ChocolateBar[]> GetBars(int userId) {
+    //     NpgsqlDataReader reader = await RetrieveData($"SELECT bar_ids FROM users WHERE id = {userId};");
+    //     reader.Read();
+    //     int[] barIds = (int[])reader.GetValue(0);
+    //     if (barIds == null) {
+    //         throw new Exception("Response not understood.");
+    //     }
+
+    //     ChocolateBarDealer chocolateDealer = new ChocolateBarDealer(dbCredentials);
+    //     ChocolateBar[] chocolateBars = [];
+    //     for (int i = 0; i < barIds.Length; i++) {
+    //         chocolateBars[i] = await chocolateDealer.Get(barIds[i]);
+    //     }
+
+    //     return chocolateBars;
+    // }
+
+    
 }
