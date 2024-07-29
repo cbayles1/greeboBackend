@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Cors;
 namespace backend.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/chocolateBars")]
 public class ChocolateBarsController : ControllerBase {
     ChocolateBarDealer dealer;
 
