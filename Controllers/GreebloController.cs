@@ -15,17 +15,9 @@ public class GreebloController : ControllerBase {
     }
 
     [HttpGet("")]
-    public async Task<float[]> GetGreebloStatus([FromQuery] string schedule) {
-        //int[] barIds = ParseScheduleString(schedule);
+    public async Task<double[]> GetGreebloStatus([FromQuery] string scheduleStr) {
+        int[] schedule = scheduleStr.Split(',').Select(int.Parse).ToArray();
+        // TODO: PREVENT DUPLICATES
         return await dealer.GetStatus(schedule);
     }
-
-    // private static int[] ParseScheduleString(string schedule) {
-    //     if (string.IsNullOrEmpty(schedule)) {
-    //         throw new Exception("Schedule query parameter is required.");
-    //     }
-    //     // Splits by comma, parse as ints, put back into array
-    //     int[] arr = schedule.Split(',').Select(int.Parse).ToArray();
-    //     return arr;
-    // }
 }
