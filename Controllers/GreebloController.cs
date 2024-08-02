@@ -16,16 +16,16 @@ public class GreebloController : ControllerBase {
 
     [HttpGet("")]
     public async Task<float[]> GetGreebloStatus([FromQuery] string schedule) {
-        int[] barIds = ParseScheduleString(schedule);
-        return await dealer.GetStatus(barIds);
+        //int[] barIds = ParseScheduleString(schedule);
+        return await dealer.GetStatus(schedule);
     }
 
-    private static int[] ParseScheduleString(string schedule) {
-        if (string.IsNullOrEmpty(schedule)) {
-            throw new Exception("Schedule query parameter is required.");
-        }
-        // Splits by comma, parse as ints, put back into array
-        int[] arr = schedule.Split(',').Select(int.Parse).ToArray();
-        return arr;
-    }
+    // private static int[] ParseScheduleString(string schedule) {
+    //     if (string.IsNullOrEmpty(schedule)) {
+    //         throw new Exception("Schedule query parameter is required.");
+    //     }
+    //     // Splits by comma, parse as ints, put back into array
+    //     int[] arr = schedule.Split(',').Select(int.Parse).ToArray();
+    //     return arr;
+    // }
 }
