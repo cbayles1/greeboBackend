@@ -21,18 +21,7 @@ def main():
                           ("bean_type VARCHAR(255)",),
                           ("broad_origin VARCHAR(255)",),])
     chocolateBars.populate(conn, cur, csvFile)
-    
-    users = Table(conn, cur, "users", [
-      ("greeblo_health INT",),
-      ("greeblo_cacao INT",),
-      ("picked_bar INT",),
-      ("day INT",),
-      ("time INT",),
-      ("bar_ids INT[50]",)
-    ])
-    
-    # INSERT INTO users (greeblo_health, greeblo_cacao, picked_bar, "day", "time", bar_ids) VALUES (3, 0, 1, 1, 0, '{4,2,1,3}');
-    
+
     cur.close()
     conn.close()
 

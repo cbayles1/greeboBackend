@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using backend.Models;
 using DatabaseVariables;
-using Microsoft.AspNetCore.Cors;
 
 namespace backend.Controllers;
 
@@ -23,11 +22,5 @@ public class ChocolateBarsController : ControllerBase {
     [HttpGet("")]
     public async Task<IEnumerable<ChocolateBar>> GetAllBars() {
         return await dealer.GetAll();
-    }
-
-    [HttpGet("{barId}/cacao")]
-    public async Task<int> GetCacaoPercent(int barId) {
-        int cacao = await dealer.GetCacaoPercent(barId);
-        return cacao;
     }
 }
