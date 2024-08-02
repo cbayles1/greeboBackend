@@ -14,6 +14,23 @@ public class ChocolateBarDealer(DatabaseCredentials credentials) : GenericDealer
         return bars;
     }
 
+    public async Task<ChocolateBar[]> GetMultiple(string schedule) {
+        ChocolateBar[] result = new ChocolateBar[21];
+        schedule = schedule.Replace("-1,", "");
+        NpgsqlDataReader reader = await RetrieveData($"SELECT * FROM chocolate_bars WHERE id IN ({schedule});");
+
+        if (reader.HasRows) {
+            int i = 0;
+            while (reader.Read()) {
+                result[i] = GetBarFromFullRow(reader);
+                i++;
+            }
+        } else {
+            result[0] = GetBarFromFullRow(reader);
+        }
+        return result;
+    }
+
     public async Task<ChocolateBar> Get(int id) {
         NpgsqlDataReader reader = await RetrieveData($"SELECT * FROM chocolate_bars WHERE id = {id};");
         reader.Read();
