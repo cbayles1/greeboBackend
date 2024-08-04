@@ -4,44 +4,50 @@ namespace backend.Models;
 
 public class GreebloDealer(DatabaseCredentials credentials) : GenericDealer(credentials) {
 
-    public async Task<double[]> GetStatus(int[] schedule) {
+    public async Task<double> GetStatus(int[] schedule) {
         Greeblo greeblo = new() {
             Health = 75, // default values
-            Cacao = 0.75, // ..
+            Cacao = 25, // ..
             Schedule = await TranslateSchedule(schedule)
         };
 
         const int DAYS = 7;
         const int DAILY_MEALS = 3;
         const int STARVATION_AMT = 1;
-        const int CACAO_BAD_AMT = 5;
-        const int CACAO_GOOD_AMT = 5;
-        const double CACAO_FLOOR = 0.1;
-        const double CACAO_CEILING = 0.1;
+        const int CACAO_BAD_AMT = 25;
+        const int CACAO_GOOD_AMT = 15;
+        const double CACAO_FLOOR = 47;
+        const double CACAO_CEILING = 63;
 
         for (int i = 0; i < DAYS; i++) {
+            int dailyCacaoSum = 0;
+            Console.WriteLine($"Day {i}");
             for (int j = 0; j < DAILY_MEALS; j++) {
                 ChocolateBar bar = greeblo.Schedule[i * DAILY_MEALS + j];
-
+                
                 if (bar == null) {
-                    greeblo.Health = Math.Max(greeblo.Health - STARVATION_AMT, 0); // IF NO MEAL EATEN, LOWER HEALTH
-                    greeblo.Health = Math.Min(greeblo.Health - STARVATION_AMT, 100); // MIN AND MAX PREVENT OUT OF BOUNDS
+                    greeblo.Health = Math.Clamp(greeblo.Health - STARVATION_AMT, 0, 100); // IF NO MEAL EATEN, LOWER HEALTH (within bounds)
+                    if (greeblo.Health <= 0) break;
                 } else {
-                    greeblo.Cacao *= bar.CacaoPercent;            
-                    greeblo.Cacao = Math.Max(bar.CacaoPercent, 0.0); // UPDATE CACAO VALUE AFTER NEW BAR
-                    greeblo.Cacao = Math.Min(bar.CacaoPercent, 100.0);
+                    Console.WriteLine($"Before: {greeblo.Cacao} | Bar: {bar.CacaoPercent}");
+                    dailyCacaoSum += bar.CacaoPercent;
+                    greeblo.Cacao = Math.Clamp((greeblo.Cacao + bar.CacaoPercent) / 2.0, 0, 100); // UPDATE CACAO VALUE AFTER NEW BAR BY AVERAGING THE TWO (within bounds)
                 }
             }
-            if (greeblo.Cacao > CACAO_FLOOR && greeblo.Cacao < CACAO_CEILING) {
-                greeblo.Health = Math.Max(greeblo.Health + CACAO_GOOD_AMT, 0); // IF IN A GOOD CACAO RANGE, RAISE HEALTH
-                greeblo.Health = Math.Min(greeblo.Health + CACAO_GOOD_AMT, 100);
+            if (greeblo.Health <= 0) break;
+
+            greeblo.Cacao = dailyCacaoSum / DAILY_MEALS; // daily consumption, has to be between CACAO_FLOOR and CACAO_CEILING
+            Console.WriteLine($"Daily Cacao: {greeblo.Cacao}, Health: {greeblo.Health}\n---------------");
+
+            if (greeblo.Cacao >= CACAO_FLOOR && greeblo.Cacao <= CACAO_CEILING) {
+                greeblo.Health = Math.Clamp(greeblo.Health + CACAO_GOOD_AMT, 0, 100); // IF IN A GOOD CACAO RANGE, RAISE HEALTH (within bounds)
             } else {
-                greeblo.Health = Math.Max(greeblo.Health - CACAO_BAD_AMT, 0); // IF NOT, LOWER HEALTH
-                greeblo.Health = Math.Min(greeblo.Health - CACAO_BAD_AMT, 100);
+                greeblo.Health = Math.Clamp(greeblo.Health - CACAO_BAD_AMT, 0, 100); // IF NOT, LOWER HEALTH (within bounds)
             }
+            if (greeblo.Health <= 0) break;
         }
 
-        return [greeblo.Health, greeblo.Cacao];
+        return greeblo.Health;
     }
 
     private async Task<ChocolateBar[]> TranslateSchedule(int[] schedule) {

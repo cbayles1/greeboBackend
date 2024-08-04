@@ -15,7 +15,7 @@ public class GreebloController : ControllerBase {
     }
 
     [HttpGet("")]
-    public async Task<double[]> GetGreebloStatus([FromQuery] string scheduleStr) {
+    public async Task<double> GetGreebloStatus([FromQuery] string scheduleStr) {
         int[] schedule = scheduleStr.Split(',').Select(int.Parse).ToArray();
         // TODO: PREVENT DUPLICATES
         return await dealer.GetStatus(schedule);
