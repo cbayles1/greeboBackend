@@ -17,7 +17,14 @@ public class GreebloController : ControllerBase {
     [HttpGet("")]
     public async Task<double> GetGreebloStatus([FromQuery] string scheduleStr) {
         int[] schedule = scheduleStr.Split(',').Select(int.Parse).ToArray();
-        // TODO: PREVENT DUPLICATES
+        
+        // PREVENT DUPLICATES
+        foreach (var number in schedule.GroupBy(x => x)) {
+            if (number.Count() > 1 && number.Key >= 0) {
+                throw new Exception("No duplicates allowed!");
+            }
+        }
+        
         return await dealer.GetStatus(schedule);
     }
 }
