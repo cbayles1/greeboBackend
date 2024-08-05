@@ -20,7 +20,7 @@ public class ChocolateBarsController : ControllerBase {
     }
 
     [HttpGet("")]
-    public async Task<IEnumerable<ChocolateBar>> GetAllBars() {
-        return await dealer.GetAll();
+    public async Task<IEnumerable<ChocolateBar>> GetAllBars([FromQuery] int limit) {
+        return await dealer.GetAll(limit);
     }
 }

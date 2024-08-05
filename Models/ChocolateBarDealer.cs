@@ -6,8 +6,11 @@ namespace backend.Models;
 public class ChocolateBarDealer(DatabaseCredentials credentials) : GenericDealer(credentials) {
     private const string allButCacao = "id, company, specific_origin, recency, review_year, company_location, rating, bean_type, broad_origin";
 
-    public async Task<IEnumerable<ChocolateBar>> GetAll() { // get all except cacao_percent, which user should not see
-        NpgsqlDataReader reader = await RetrieveData($"SELECT {allButCacao} FROM chocolate_bars;");
+    public async Task<IEnumerable<ChocolateBar>> GetAll(int limit=-1) { // get all columns except cacao_percent, which user should not see
+        string query = $"SELECT {allButCacao} FROM chocolate_bars ORDER BY random()";
+        if (limit > 0) query += $" LIMIT {limit}";
+
+        NpgsqlDataReader reader = await RetrieveData(query);
         List<ChocolateBar> bars = [];
         while (reader.Read()) {
             bars.Add(GetBarFromFullRow(reader));
