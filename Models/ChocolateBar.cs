@@ -2,7 +2,7 @@ namespace backend.Models;
 
 public class ChocolateBar {
     public int Id {get; set;}
-    public int CacaoPercent { get; set; }
+    public int? CacaoPercent { get; set; }
     public int? Recency { get; set; }
     public int? ReviewYear { get; set; }
     public float? Rating { get; set; }
