@@ -15,7 +15,7 @@ public class GreebloController : ControllerBase {
     }
 
     [HttpGet("")]
-    public async Task<double> GetGreebloStatus([FromQuery] string scheduleStr) {
+    public async Task<Greeblo> GetGreebloStatus([FromQuery] string scheduleStr) {
         int[] schedule = scheduleStr.Split(',').Select(int.Parse).ToArray();
         
         // foreach (var number in schedule.GroupBy(x => x)) { // PREVENT DUPLICATES

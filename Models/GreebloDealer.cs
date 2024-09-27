@@ -4,7 +4,7 @@ namespace backend.Models;
 
 public class GreebloDealer(DatabaseCredentials credentials) : GenericDealer(credentials) {
 
-    public async Task<double> GetStatus(int[] schedule) {
+    public async Task<Greeblo> GetStatus(int[] schedule) {
         Greeblo greeblo = new() {
             Health = 75, // default values
             Cacao = 25, // ..
@@ -19,17 +19,18 @@ public class GreebloDealer(DatabaseCredentials credentials) : GenericDealer(cred
         const double CACAO_FLOOR = 47;
         const double CACAO_CEILING = 63;
 
-        for (int i = 0; i < DAYS; i++) {
+        int daysLasted;
+        for (daysLasted = 0; daysLasted < DAYS; daysLasted++) {
             int dailyCacaoSum = 0;
-            //Console.WriteLine($"Day {i}");
+            //Console.WriteLine($"Day {daysLasted}");
             for (int j = 0; j < DAILY_MEALS; j++) {
-                int barCacao = greeblo.Schedule[i * DAILY_MEALS + j];
+                int barCacao = greeblo.Schedule[daysLasted * DAILY_MEALS + j];
                 
                 if (barCacao < 0) {
                     greeblo.Health = Math.Clamp(greeblo.Health - STARVATION_AMT, 0, 100); // IF NO MEAL EATEN, LOWER HEALTH (within bounds)
                     if (greeblo.Health <= 0) break;
                 } else {
-                    //Console.WriteLine($"Before: {greeblo.Cacao} | Bar: {barCacao}");
+                    Console.WriteLine($"Before: {greeblo.Cacao} | Bar: {barCacao}");
                     dailyCacaoSum += barCacao;
                     greeblo.Cacao = Math.Clamp((greeblo.Cacao + barCacao) / 2.0, 0, 100); // UPDATE CACAO VALUE AFTER NEW BAR BY AVERAGING THE TWO (within bounds)
                 }
@@ -47,7 +48,8 @@ public class GreebloDealer(DatabaseCredentials credentials) : GenericDealer(cred
             if (greeblo.Health <= 0) break;
         }
 
-        return greeblo.Health;
+        greeblo.DaysLasted = daysLasted;
+        return greeblo;
     }
 
     private async Task<int[]> IdsToCacao(int[] schedule) {
